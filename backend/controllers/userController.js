@@ -10,7 +10,7 @@ const authUser = asyncHandler(async (req, res) => {
 
   const {email,password} = req.body;
 
-  const user =  User.findOne({email})
+  const user = await User.findOne({email})
 
   if(user && (await user.matchPassword(password))) {
     generateToken(res,user._id)
@@ -34,7 +34,6 @@ const authUser = asyncHandler(async (req, res) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const {name,email,password} = req.body;
-  console.log(name);
 
   const userExists = await User.findOne({ email });
 
@@ -69,7 +68,13 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access Public
 
 const logoutUser = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Logout User" });
+
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0)
+  })
+
+  res.status(200).json({ message: "User Logged Out" });
 });
 
 // @desc user profile
@@ -77,7 +82,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @access Private
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "User Profile" });
+  const user = {
+    _id: req.user._id,
+    name: req.user.name,
+    email: req.user.email
+  }
+  res.status(200).json(user);
 });
 
 // @desc Update user profile
@@ -85,6 +95,27 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if(user){
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if(req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updateUser = await user.save();
+
+    res.status(200).json({
+      _id: updateUser._id,
+      name: updateUser.name,
+      email: updateUser.email
+    })
+
+  } else {
+
+  }
   res.status(200).json({ message: "Update User Profile" });
 });
 

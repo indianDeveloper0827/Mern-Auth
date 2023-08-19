@@ -4,7 +4,6 @@ import { RootState } from "../store";
 
 const PrivateRoute = () => {
     const { userInfo } = useSelector((state:RootState) => state.auth);
-console.log("my",userInfo);
 
   return userInfo ? <Outlet /> : <Navigate to='/login' replace/>;
 }

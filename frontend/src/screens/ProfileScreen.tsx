@@ -1,7 +1,6 @@
 import { Button, Form } from "react-bootstrap"
 import FormContainer from "../components/FormContainer"
 import { useState,useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
 import { useDispatch,useSelector } from "react-redux";
 import {toast} from 'react-toastify'
 import { RootState } from "../store";
@@ -15,16 +14,17 @@ const ProfileScreen = () => {
     const [password,setPassword] = useState('');
     const [confirmPassword,setConfirmPassword] = useState('')
 
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
 
     const {userInfo} = useSelector((state: RootState) => state.auth)
+
     const [updateUser, {isLoading}] = useUpdateUserMutation();
-    // useEffect(() => {
-    //     setName(userInfo.name);
-    //     setEmail(userInfo.email);
-    // },[userInfo.setName(),userInfo.setEmail()])
+    
+    useEffect(() => {
+        setName(userInfo.name);
+        setEmail(userInfo.email);
+    },[userInfo.setName,userInfo.setEmail])
 
 
 
